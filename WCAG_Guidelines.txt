@@ -1,0 +1,142 @@
+WCAG 2.1 Level A and AA guidelines
+1.1.1 Non-text Content: (Level A): 
+  Bins, waste items, buttons, etc. must have text labels in the code. 
+  *Basically just label each bin with what key they correspond to
+
+1.3.1 Info and Relationships (Level A): 
+  Must use proper HTML tags. Heading should be code as heading tag, etc.
+  *Should already be done
+
+1.3.2 Meaningful Sequence (Level A): 
+  The reading and navigation order is logical and intuitive.
+  *Just keep same format game files are in and should be fine
+
+1.3.3 Sensory Characteristics (Level A): 
+  Instructions do not rely upon shape, size, or visual location (e.g., "Click the square icon to continue" or "Instructions are in the right-hand column").
+  Instructions do not rely upon sound (e.g., "A beeping sound indicates you may continue.").
+  *Instructions of game already abide by this so should be irrelevant
+
+1.3.4 Orientation (Level AA): 
+	Must work in both portrait and landscape.
+  *It does, but it's a bit awkward. (low priority)
+
+1.3.5 Identify Input Purpose (AA)
+  Self Information provided by user has a reason for being done so
+  *Irrelevant. Game doesn’t require user data
+
+1.4.3 Contrast (Minimum) (Level AA):
+	Text and images of text have a contrast ratio of at least 4.5:1.
+  Large text - at least 18 points (typically 24px) or 14 points (typically 18.66px) and bold - has a contrast ratio of at least 3:1.
+  *Current text and images should be fine, just make sure any updated images we make abide by this.
+
+1.4.4 Resize Text (Level AA):
+	The page is readable and functional when the page is zoomed to 200%.
+  *Already does
+
+1.4.5 Images of Text (Level AA):
+  If the same visual presentation can be made using text alone, an image is not used to present that text.
+  *I think this just basically means a screen reader can read any text on the screen that is written out.
+
+1.4.10 Reflow (AA)
+  Context visible within a vertical scrolling of 320 pixels and horizontal of 256 pixels. (context can be viewed without scrolling)
+  *This should be good already
+
+1.4.11 Non-text Contrast (Level AA):
+  A contrast ratio of at least 3:1 is present for differentiating graphical objects (icons, buttons, docus indicators, etc.)
+  At least 3:1 contrast is maintained in the various states (focus, hover, active, etc.)
+  *Just make sure updated images of bins work with this, or any other object sprite we adjust.
+
+1.4.12 Text Spacing (Level AA):
+  No loss of content or functionality occurs when the user adapts paragraph spacing to 2 times the font size, text line height/spacing to 1.5 times the font size, word spacing to .16 times the font size, and letter spacing to .12 times the font size.
+  *Most text on the screen is just still images so this should really be necessary to do.
+
+1.4.13 Content on Hover or Focus (Level AA):
+	When a tooltip or pop-up appears after you hover over or tab to something:
+    Easy to Close: You can dismiss it without moving your mouse or keyboard focus, usually by pressing the Esc key.
+    Hoverable: You can move your mouse pointer directly from the trigger onto the new content itself without it disappearing.
+    Persistent: It stays visible until you move your focus away, close it, or the information is no longer needed.
+  *For the pop-ups we want to add, make sure they close with a button press or they don’t linger for too long
+
+2.1.1 Keyboard (Level A):
+	All functionalities must be available using only the keyboard.
+  *This will be the main code added. Just adding the keybinds to allow for item selection and bin selections without mouse control
+
+2.1.2 No Keyboard Trap (Level A):
+  Keyboard focus is never locked or trapped at one component of the page.
+  If it requires more than unmodified arrows or tab keys or other standard exit methods, the user is advised of the method for moving focus away
+  *Since we are just allowing users to tab through items to select them, this should be fine since it shouldn’t lock them into anything
+
+2.1.4 Character Key Shortcuts (Level A):
+	May or may not need this.
+  *This mainly will only apply to bin selection with the numbers. As long as those binds are only active when an item is selected by tabbing through them, we should be ok (if they using mouse controls the numbers aren’t active)
+
+2.2.1 Timing Adjustable (Level A):
+  If a page or application has a time limit, the user is given options to turn it off, adjust, or extend that time limit. (I think the game has the pause button so no fix is needed)
+  *Easiest way imo is just to make it so the time limit is adjustable rather than turning it off maybe have a default time, but give option to adjust in a menu or smthn
+
+2.4.3 Focus Order (Level A):
+  When navigating through a page using the Tab key, the focus must move through the interactive elements (Level 1/2/3, play, pause) in a logical order.
+  *Basically just having it so that when they tab through level selection, it only goes over stuff that they can go further into
+
+2.4.6 Headings and Labels (Level AA):
+  The game has visual text that acts as headings ("Choose Your Game") and labels for buttons ("Level 1"), but these are all images of text. Need to use html.
+  *Should already be good for this
+
+2.4.7 Focus Visible (Level AA):
+  When interacting with an item or button, usually a border or outline that appears around it.
+  *Just having a way to show that something is selected. Is already done for mouse, but tabbing through showing selection will need to be done
+
+2.5.1 Pointer Gestures (Level A):
+	Dragging is a path-based gesture.
+	May be provide a simple, click-based alternative.
+  *Basically just says scrolling or zooming can be done with a single input rather than a multi input
+
+2.5.2 Pointer Cancellation (Level A):
+  The event should fire on the "up-event" (when you release the mouse button or lift your finger), not on the "down-event" (the initial press)
+  *This shouldn’t be too hard to do. Should just be a specific way to write in the code
+
+2.5.3 Label in Name (Level A):
+	Ensure the visible text and the html label match.
+  *Should be good already
+
+2.5.4 Motion Actuation (A)
+  Actions that require physical movement of device can be turned off
+  *Not applicable to us
+
+3.1.1 Language of Page (Level A):
+	Declare the primary language of the webpage in the code. <html lang="en">
+  *pretty sure we just add this at top of html file
+
+3.3.1 Error Identification (Level A):
+  If a user makes a mistake, the system must do two things: identify the item that is in error and describe the error in text.
+  *This is solved using our pop-ups that we were going to add. The text should just say item name and that it went into wrong bin
+
+3.3.2 Labels or Instructions (Level A):
+  When content requires users to provide input, you must provide clear labels or instructions. (I don’t know if clicking, dragging, and sorting are treated as user input or not.)
+  *This basically is just us having to tell what the keybinds are in instructions or how the game is played beforehand
+
+3.3.3 Error Suggestion (Level A):
+  This builds on 3.3.1 Error Identification. If an error is detected and we know what the correct input should be, we should provide a suggestion to the user.
+  *None of the user input errors are automatically detected so this doesn’t apply to us. If anything we just state the correct bin in pop-up but that doesn’t seem necessary. 
+
+4.1.2 Name, Role, Value (Level A):
+  Markup is used in a way that facilitates accessibility. This includes following the HTML specifications and using forms, input labels, frame titles, etc. appropriately.
+  ARIA is used appropriately to enhance accessibility when HTML is not sufficient.
+  *This should be fine as long as we aren’t using weird random keys for inputs.
+
+4.1.3 Status Messages (Level AA):
+  When a message appears on the screen to provide feedback (the score changes, matches are found, and items are sorted correctly or incorrectly) it must be communicated to screen reader users without receiving focus.
+  *Just short and quick comments for a screen reader should take care of this
+
+There are a few other guidelines not listed here, but they all pretty much get covered by following ADA guidelines.
+
+The Code Explained (ish):
+Lines 0-604: Most of this is just declaration of buttons and grabbing the images for each screen from related files
+Lines 605-753: This is board setup for matching game for each of 3 levels
+Lines 754-1299: Board setup and garbage placement for tetris game
+Lines 1300-1350: Grabs random images for each garbage dropped
+Lines 1351-2086: Main body for how matching game is ran. Messages, what buttons do, menus, etc
+Lines 2087-2218: Handles mouse drag controls for tetris game
+Lines 2219-2297: Handles how items are left after mouse releases item
+Lines 2298-2365: Handles the mouse/touchpad controls.
+Lines 2366-3557(END): Basically just mapping images to the code they go and connects their functionality. Just what appear when stuff happens in user’s screen 
