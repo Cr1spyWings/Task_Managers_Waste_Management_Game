@@ -13,6 +13,10 @@
         display: block;
         margin: 0 auto;
       }
+      <div id="selectedItem"
+        style="text-align:center; font-size:24px; margin-top:10px; color:#333;"
+        Selected: None
+      </div>
     </style>
   </head>
   <body>
@@ -36,6 +40,9 @@
       document.addEventListener("touchstart", touch2Mouse, true);
       document.addEventListener("touchmove", touch2Mouse, true);
       document.addEventListener("touchend", touch2Mouse, true);
+
+      document.addEventListener("keyup", spaceHandler, false);
+      document.addEventListener("keyup", binSelectedHandler, false);
 
       var canvas = document.getElementById("myCanvas");
       var ctx = canvas.getContext("2d");
@@ -88,7 +95,7 @@
       var backgroundMusic = new Audio();
 
       var sortingMusic = new Audio();
-
+     
       var buttonSound = new Audio();
       var tileFlipSound = new Audio();
       var tileMatchSound = new Audio();
@@ -420,6 +427,10 @@
       var dragOffsetY;
       var draggedGarbage = new Garbage(0, 0, 0, 0, 0);
 
+      let cIndex = 0;      
+      var selImg;
+      var selGarbage = new Garbage(0, 0, 0, 0, 0);
+      
       var binWidth = 960 / 5;
       var binBackHeight = 25;
       var binFrontHeight = 100;
@@ -1641,6 +1652,94 @@
         e.preventDefault();
       }
 
+      //function to handle non-mouse functioning of item selection
+      function spaceHandler(e) {
+        if (currentState == state.PLAYSORT) {
+          if (e.key === "Space" || e.key === " ") {
+            e.preventDefault();
+
+            if(garbage.legth === 0) return;
+            
+            cIndex++;
+            if(cIndex >= garbage.length) {
+              cIndex = 0;
+            }
+
+            selImg = garbage[cIndex].image;
+            selGarbage = garbage[cIndex];
+            const display = document.getElementById("selectedItem");
+            const name = selGarbage.image.src.split("/").pop() || "Unknown";
+            display.textContent = "Selected: " + name;
+          }
+        }
+      }
+      
+      //function to handle non-mouse bin selection
+      function binSelectedHandler(e) {
+        if (currentState == state.PLAYSORT && selGarbage != null) {
+          let correctType = null;
+
+          switch (e.key) {
+            case "1":
+              correctType = paper;
+              break;
+            case "2":
+              correctType = comingled;
+              break;
+            case "3":
+              correctType = organics;
+              break;
+            case "4":
+              correctType = landfill;
+              break;
+            default:
+              return;
+          }
+
+          const index = garbage.findIndex(
+            (g) =>
+              g.x === selGarbage.x &&
+              g.y === selGarbage.y &&
+              g.image === selGarbage.image
+          );
+
+          if(index === -1) return;
+          const selected = garbage[index];
+
+          if(selected.type === correctType) {
+            if(!muted) {
+              tileMatchSound.load();
+              tileMatchSound.play();
+            }
+
+            if(selected.type != landfill) {
+              recyclingSorted++;
+              scorePercentage = Number((recyclingSorted / startingGarbageCount) * 100).toFixed(0);
+            } else {
+              landfillSorted++;
+            }
+
+            garbage.splice(index, 1);
+            itemsRemaining--;
+
+            selGarbage = null;
+            document.getElementById("selectedItem").textContent = "Selected: None";
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawSortingGame();
+            
+            if(itemsRemaining < 1) {
+              timer.missDelay();
+            }
+          } else {
+            if(!muted) {
+              buttonSound.load();
+              buttonSound.play();
+            }
+          }
+        }
+      }
+
       function toggleAudio(x, y) {
         if (muteButton.clicked(x, y) && !muted) {
           if (currentState == state.PLAYSORT) {
@@ -2027,6 +2126,12 @@
             garbage[i].size,
             garbage[i].size
           );
+        }
+
+        if(selGarbage) {
+          ctx.strokeStyle = "red";
+          ctx.lineWidth = 4;
+          ctx.strokeRect(selGarbage.x, selGarbage.y, selGarbage.size, selGarbage.size);
         }
 
         if (mouseDown) {
