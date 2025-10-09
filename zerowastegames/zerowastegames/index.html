@@ -559,7 +559,7 @@
       function setSortLevelBoard() {
         if (level == 1) {
           timerTime = 60000;
-          newTime = 3000; //Sets the time for lvl 3 to 3 extra seconds per incorrect input.
+          newTime = 3000; //Sets the time for lvl 1 to 3 extra seconds per incorrect input.
           dropGarbageInterval = 2000;
           garbageQueue = [
             new Garbage(
@@ -1668,7 +1668,6 @@
             ) {
               validPlacement = false;
               statusAnnouncer.textContent = "Incorrect!";
-              //timer.setTimerTime(timerTime + newTime); // Adds time due to the incorrect placement.
               setTimeout(() => {statusAnnouncer.textContent = '';}, 1000);
             }
 
