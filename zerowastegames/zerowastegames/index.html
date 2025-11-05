@@ -54,6 +54,26 @@
         clip: rect(0, 0, 0, 0);
         border: 0;
       }
+      /* Pause volume group */
+      #pauseVolume{
+        position: relative;
+        margin: 12px auto 0 auto;
+        max-width: 480px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        justify-content: center;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: rgba(0,0,0,.6);
+        color: #fff;
+      }
+      #pauseVolume input[type="range"]{ width: 280px; }
+      #pauseVolume:focus-within{
+        outline: 3px solid #1a73e8;
+        outline-offset: 2px;
+      }
+
     </style>
   </head>
   <body>
@@ -62,6 +82,20 @@
     <!-- Vision template max width is 653px (translates to 435px height) -->
     <!-- Original is 960px width and 640px height -->
     <canvas id="myCanvas" width="960" height="640"></canvas>
+
+    <!-- Pause-only volume control (hidden until paused) -->
+    <div id="pauseVolume" hidden aria-hidden="true" role="group" aria-label="Audio volume">
+      <label for="volumeSlider" id="volumeSliderLabel">Volume</label>
+      <input
+        id="volumeSlider"
+        type="range"
+        min="0"
+        max="100"
+        value="100"
+        aria-labelledby="volumeSliderLabel"
+      />
+      <span id="volumeValue" aria-hidden="true">100%</span>
+    </div>
 
     <div class="scale-controls">
       <button id="normalScaleBtn" class="scale-btn active">Normal Screen</button>
@@ -91,6 +125,19 @@
       document.addEventListener("keyup", toggleTTSHandler, false);
       document.addEventListener("keyup", actPauseMenu, false);
       document.addEventListener("keyup", pauseMenuHandler, false);
+      
+      // === Volume slider wiring (NEW) ===
+      (function(){
+        var s = document.getElementById('volumeSlider');
+        if (!s) return;
+        s.value = Math.round(masterVolume*100);
+        function onInput(){
+          var v = Number(s.value)/100;
+          setMasterVolume01(v);
+        }
+        s.addEventListener('input', onInput);
+        s.addEventListener('change', onInput);
+      })();
 
       var canvas = document.getElementById("myCanvas");
       var ctx = canvas.getContext("2d");
@@ -326,6 +373,25 @@
 
       var numberLoaded = 0;
       var numberOfAssets = 96;
+      
+      // === Master volume plumbing (NEW) ===
+      var masterVolume = 1.0;           // 0.0–1.0
+      var soundRegistry = [];           // collect all Audio() nodes
+
+      function registerSound(a){
+        if (a && soundRegistry.indexOf(a) < 0) soundRegistry.push(a);
+        if (a) a.volume = masterVolume;
+        return a;
+      }
+
+      function setMasterVolume01(v01){
+        masterVolume = Math.max(0, Math.min(1, v01));
+        for (var i=0;i<soundRegistry.length;i++){
+          soundRegistry[i].volume = masterVolume;
+        }
+        var vv = document.getElementById('volumeValue');
+        if (vv) vv.textContent = Math.round(masterVolume*100) + '%';
+      }
 
       function loadAssets() {
         var finishedLoading = function () {
@@ -548,6 +614,10 @@
         sortingMusic.src = "Sound/sortingMusic.mp3";
         buttonSound.src = "Sound/buttonPop.mp3";
         tileMatchSound.src = "Sound/ding.mp3";
+        registerSound(backgroundMusic);
+        registerSound(sortingMusic);
+        registerSound(buttonSound);
+        registerSound(tileMatchSound);
       }
 
       var dragImg;
@@ -1455,6 +1525,27 @@
         return Math.floor(Math.random() * (max - min + 1)) + min;
       }
 
+      // === Pause slider show/hide (NEW) ===
+      function showPauseVolumeControls(show){
+        var el = document.getElementById('pauseVolume');
+        if (!el) return;
+        if (show){
+          el.hidden = false;
+          el.setAttribute('aria-hidden','false');
+          var s = document.getElementById('volumeSlider');
+          if (s) s.focus();
+          setSliderDisabled(!!muted);                          // keep UI in sync with mute
+          if (s) s.value = Math.round(masterVolume * 100);     // reflect current volume
+        } else {
+          el.hidden = true;
+          el.setAttribute('aria-hidden','true');
+        }
+      }
+      function setSliderDisabled(disabled){
+        var s = document.getElementById('volumeSlider');
+        if (s) s.disabled = !!disabled;
+      }
+
       function clickHandler(e) {
         const pos = getMousePos(e);
         var x = pos.x;
@@ -1662,6 +1753,7 @@
               }
 
               timer.pause();
+              showPauseVolumeControls(true);
 
               // Grid layout: 2 rows x 3 columns with smaller buttons
               var pauseButtonSize = 70; // Smaller button size for pause screen
@@ -1697,6 +1789,7 @@
               }
 
               timer.unpause();
+              showPauseVolumeControls(false);
 
               pauseButton.image = pauseButtonImg;
               pauseButton.x = sidebarLocalXOrigin + binWidth * (1 / 8);
@@ -2470,6 +2563,7 @@
 
           muted = true;
           muteButton.image = unmuteImg;
+          setSliderDisabled(true);
         } else if (muted) {
             statusAnnouncer.textContent = "Audio unmuted.";
             if (currentState == state.PLAYSORT) {
@@ -2480,6 +2574,7 @@
 
             muted = false;
             muteButton.image = muteImg;
+            setSliderDisabled(false);
           }
         }
       }
@@ -2514,6 +2609,7 @@
               }
 
               timer.pause();
+              showPauseVolumeControls(true);
 
               // Grid layout: 2 rows x 3 columns with smaller buttons
               var pauseButtonSize = 70; // Smaller button size for pause screen
@@ -2549,6 +2645,7 @@
               }
 
               timer.unpause();
+              showPauseVolumeControls(false);
 
               pauseButton.image = pauseButtonImg;
               pauseButton.x = sidebarLocalXOrigin + binWidth * (1 / 8);
@@ -2574,6 +2671,7 @@
               }
 
               timer.pause();
+              showPauseVolumeControls(true);
 
               // Grid layout: 2 rows x 3 columns with smaller buttons
               var pauseButtonSize = 70; // Smaller button size for pause screen
@@ -2609,6 +2707,7 @@
               }
 
               timer.unpause();
+              showPauseVolumeControls(false);
 
               pauseButton.image = pauseButtonImg;
               pauseButton.x = sidebarLocalXOrigin + binWidth * (1 / 8);
@@ -2851,6 +2950,7 @@
 
           muted = true;
           muteButton.image = unmuteImg;
+          setSliderDisabled(true);
         } else if (muteButton.clicked(x, y) && muted) {
           statusAnnouncer.textContent = "Audio unmuted.";
           if (currentState == state.PLAYSORT) {
@@ -2861,6 +2961,7 @@
 
           muted = false;
           muteButton.image = muteImg;
+          setSliderDisabled(false);
         }
 
         // Toggle TTS button (available on all screens except during active gameplay)
