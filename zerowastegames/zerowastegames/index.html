@@ -54,9 +54,8 @@
         clip: rect(0, 0, 0, 0);
         border: 0;
       }
-      /* Pause volume group */
+
       #pauseVolume{
-        #pauseVolume[hidden] { display: none !important; }
         position: relative;
         margin: 12px auto 0 auto;
         max-width: 480px;
@@ -74,18 +73,19 @@
         outline: 3px solid #1a73e8;
         outline-offset: 2px;
       }
+      [hidden] { display: none !important; }
+      #pauseVolume[hidden] { display: none !important; }
+
 
     </style>
   </head>
   <body>
     <div id="status-announcer" class="visually-hidden" aria-live="polite"></div>
     <div id="selectedItem" style="text-align:center; font-size:24px; margin-top:10px; color:#333;">Selected: None</div>
-    <!-- Vision template max width is 653px (translates to 435px height) -->
-    <!-- Original is 960px width and 640px height -->
+
     <canvas id="myCanvas" width="960" height="640"></canvas>
 
-    <!-- Pause-only volume control (hidden until paused) -->
-    <div id="pauseVolume" hidden aria-hidden="true" role="group" aria-label="Audio volume">
+    <div id="pauseVolume" hidden aria-hidden="true" role="group" aria-label="Audio volume" style="display:none">
       <label for="volumeSlider" id="volumeSliderLabel">Volume</label>
       <input
         id="volumeSlider"
@@ -1540,6 +1540,7 @@
         } else {
           el.hidden = true;
           el.setAttribute('aria-hidden','true');
+          el.style.display = 'none';
         }
       }
       function setSliderDisabled(disabled){
