@@ -131,7 +131,7 @@
       (function(){
         var s = document.getElementById('volumeSlider');
         if (!s) return;
-        s.value = Math.round(masterVolume*100);
+        s.value = Math.round(((typeof masterVolume === 'number' ? masterVolume : 1) * 100));
         function onInput(){
           var v = Number(s.value)/100;
           setMasterVolume01(v);
@@ -1533,6 +1533,7 @@
         if (show){
           el.hidden = false;
           el.setAttribute('aria-hidden','false');
+          el.style.display = 'flex';
           var s = document.getElementById('volumeSlider');
           if (s) s.focus();
           setSliderDisabled(!!muted);                          // keep UI in sync with mute
