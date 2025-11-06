@@ -55,9 +55,37 @@
         clip: rect(0, 0, 0, 0);
         border: 0;
       }
+      .errorBanner{  
+        position:fixed;
+        top:0;
+        left:50%;
+        transform: translateX(-50%) translateY(-120%);
+        background: #ffffff;
+        color: #333;
+        border: 3px solid #000;
+        border-radius: 8px;
+        transition: transform 200ms ease;
+        z-index: 9999;
+        padding: 16px 22px;                         /*larger reading target*/
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        
+        /*Added here for better readability*/
+        font-size: 20px;
+        line-height: 1.35;
+        font-weight: 500;
+        max-width: 90 vw;
+        text-align: center;
+        font-family: "Comic Sans MS", "Comic Sans", cursive;
+      }
+      .errorBanner.show{
+        transform:translateX(-50%) translateY(8px);
+      }
+
     </style>
   </head>
   <body>
+  <div id ="errorBanner" class="errorBanner" role="alert" aria-live="assertive"></div>
+
     <div id="status-announcer" class="visually-hidden" aria-live="polite"></div>
     <div id="selectedItem" style="text-align:center; font-size:24px; margin-top:10px; color:#333;">Selected: None</div>
     <!-- Vision template max width is 653px (translates to 435px height) -->
@@ -99,6 +127,12 @@
       const statusAnnouncer = document.getElementById("status-announcer");
       var contextScale = 0.68;
       //ctx.scale(contextScale,contextScale);
+
+     const errorBanner = document.getElementById("errorBanner");
+      let errorBannerTimer = null;
+      
+      //Constant variable to decide how long the banner stays on the screen
+      const errorBannerDuration = 5000;
 
       // Helper function to get correct mouse coordinates accounting for canvas scaling
       function getMousePos(e) {
@@ -1878,6 +1912,10 @@
 
               draggedGarbage = garbage[i];
 
+              //Selected tag updates when you click and drag 
+              const pickedName = imageBannerName(garbage[i].image);
+              setSelectedLabel(pickedName);
+
               switch (garbage[i].image) {
                 case bananaMatchImg:
                   draggedGarbage.image = bananaGSImg;
@@ -2212,6 +2250,7 @@
                 draggedGarbage.type == landfill)
             ) {
               validPlacement = false;
+              showErrorBanner(draggedGarbage.image, draggedGarbage.type);
               statusAnnouncer.textContent = "Incorrect!";
               setTimeout(() => {statusAnnouncer.textContent = '';}, 1000);
 
@@ -2235,6 +2274,8 @@
               garbage.push(draggedGarbage);
             }
           }
+          //Reset the selection label once you are done clicking it
+          setSelectedLabel (null);
         }
 
         mouseDown = false;
@@ -2900,6 +2941,7 @@
               speechSynthesis.cancel();
               speechSynthesis.speak(incorrectKeyboardUtterance);
             }
+            showErrorBanner(selected.image, selected.type);
           }
         }
       }
@@ -3979,6 +4021,68 @@
       loadAssets();
 
       draw();
+
+      function typeToLabel(t){
+        //get names of docs
+        return ["Paper", "Plastic, Glass & Metals", "Organics", "Landfill"][t] || "Unkown";
+      }
+      
+      function imageBannerName(img) {
+        // Accept either an <img> object or a string URL
+        const src =
+        typeof img === "string"
+          ? img.trim()
+          : img && typeof img.src === "string"
+          ? img.src.trim()
+          : "";
+
+        if (!src) return "Item";
+
+        // Strip path, query, and hash
+        const filename = src.split("/").pop().split("?")[0].split("#")[0] || "";
+        if (!filename) return "Item";
+
+        // Drop extension + trailing style markers
+        const base = filename
+        .replace(/\.(png|jpe?g|gif|webp|svg)$/i, "")
+        .replace(/(Clr|GS)$/i, "");
+
+        // Normalize separators and camelCase into spaces
+        const spaced = base
+        .replace(/[_-]+/g, " ")
+        .replace(/([a-z])([A-Z])/g, "$1 $2")
+        .replace(/\s+/g, " ")
+        .trim();
+
+        if (!spaced) return "Item";
+
+        // Title case
+        return spaced.replace(/\b\w/g, (c) => c.toUpperCase());
+      }
+      
+      function showErrorBanner(itemImg, correctType){
+        const itemName = imageBannerName(itemImg);
+        const suggestion = typeToLabel(correctType);
+        
+        errorBanner.classList.remove('show');
+        void errorBanner.offsetWidth;
+        
+        errorBanner.textContent = `Incorrect bin for ${itemName}. Put it in ${suggestion}.`;
+        
+        statusAnnouncer.textContent = `Incorrect bin. Suggested: ${suggestion}.`;
+        errorBanner.classList.add("show");
+        
+        if(errorBannerTimer) clearTimeout(errorBannerTimer);
+        errorBannerTimer = setTimeout(() => {
+          errorBanner.classList.remove("show");
+        }, 1000);
+      }
+      
+      function setSelectedLabel(name){
+        const display = document.getElementById('selectedItem');
+        display.textContent = 'Selected: ' + (name || 'None');
+      }
+
     </script>
   </body>
 </html>
