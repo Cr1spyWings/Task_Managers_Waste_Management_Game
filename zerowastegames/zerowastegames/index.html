@@ -44,6 +44,7 @@
         color: white;
         border-color: #45a049;
       }
+      
       .visually-hidden {
         position: absolute;
         width: 1px;
@@ -54,14 +55,69 @@
         clip: rect(0, 0, 0, 0);
         border: 0;
       }
+      .errorBanner{  
+        position:fixed;
+        top:0;
+        left:50%;
+        transform: translateX(-50%) translateY(-120%);
+        background: #ffffff;
+        color: #333;
+        border: 3px solid #000;
+        border-radius: 8px;
+        transition: transform 200ms ease;
+        z-index: 9999;
+        padding: 16px 22px;                         /*larger reading target*/
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        
+        /*Added here for better readability*/
+        font-size: 20px;
+        line-height: 1.35;
+        font-weight: 500;
+        max-width: 90 vw;
+        text-align: center;
+        font-family: "Comic Sans MS", "Comic Sans", cursive;
+      }
+      .errorBanner.show{
+        transform:translateX(-50%) translateY(8px);
+      }
+      #pauseVolume{
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 20px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        max-width: 520px;
+        border-radius: 8px;
+        background: rgba(0,0,0,.6);
+        color: #fff;
+        z-index: 9990;
+        font: 16px/1.35 system-ui, sans-serif;
+      }
+      .ui-paused #pauseVolume{ display: flex; }
+      #pauseVolume input[type="range"]{ width: 280px; }
+      #pauseVolume:focus-within{ outline: 3px solid #1a73e8; outline-offset: 2px; }
+      [hidden]{ display:none !important; }
+
     </style>
   </head>
   <body>
+  <div id ="errorBanner" class="errorBanner" role="alert" aria-live="assertive"></div>
+
     <div id="status-announcer" class="visually-hidden" aria-live="polite"></div>
     <div id="selectedItem" style="text-align:center; font-size:24px; margin-top:10px; color:#333;">Selected: None</div>
     <!-- Vision template max width is 653px (translates to 435px height) -->
     <!-- Original is 960px width and 640px height -->
     <canvas id="myCanvas" width="960" height="640"></canvas>
+    <div id="pauseVolume" hidden aria-hidden="true" role="group" aria-label="Audio volume">
+      <label for="volumeSlider" id="volumeSliderLabel">Volume</label>
+      <input id="volumeSlider" type="range" min="0" max="100" value="100" step="1"
+            aria-labelledby="volumeSliderLabel">
+      <span id="volumeValue" aria-hidden="true">100%</span>
+    </div>
 
     <div class="scale-controls">
       <button id="normalScaleBtn" class="scale-btn active">Normal Screen</button>
@@ -91,12 +147,31 @@
       document.addEventListener("keyup", toggleTTSHandler, false);
       document.addEventListener("keyup", actPauseMenu, false);
       document.addEventListener("keyup", pauseMenuHandler, false);
+      document.addEventListener("keyup", toggleLabelsHandler, false);
+
+      (function(){
+        var s = document.getElementById('volumeSlider');
+        if (!s) return;
+        s.value = Math.round(masterVolume * 100);
+        function onInput(){
+          var v = Number(s.value) / 100;
+          setMasterVolume01(v);
+        }
+        s.addEventListener('input', onInput);
+        s.addEventListener('change', onInput);
+      })();
 
       var canvas = document.getElementById("myCanvas");
       var ctx = canvas.getContext("2d");
       const statusAnnouncer = document.getElementById("status-announcer");
       var contextScale = 0.68;
       //ctx.scale(contextScale,contextScale);
+
+     const errorBanner = document.getElementById("errorBanner");
+      let errorBannerTimer = null;
+      
+      //Constant variable to decide how long the banner stays on the screen
+      const errorBannerDuration = 5000;
 
       // Helper function to get correct mouse coordinates accounting for canvas scaling
       function getMousePos(e) {
@@ -179,6 +254,7 @@
       var currentState = state.LOADING;
 
       var mouseDown = false;
+      var menuOP = false;
 
       var percent;
       var timerBarHeight = 30;
@@ -216,8 +292,27 @@
       var tileFlipSound = new Audio();
       var tileMatchSound = new Audio();
 
+      var masterVolume = 1.0;
+      var soundRegistry = []
+
+      function registerSound(a){
+        if (a && soundRegistry.indexOf(a) < 0) soundRegistry.push(a);
+        if (a) a.volume = masterVolume;
+        return a;
+      }
+
+      function setMasterVolume01(v01){
+        masterVolume = Math.max(0, Math.min(1, v01));
+        for (var i=0; i<soundRegistry.length; i++){
+          soundRegistry[i].volume = masterVolume;
+        }
+        var vv = document.getElementById('volumeValue');
+        if (vv) vv.textContent = Math.round(masterVolume*100) + '%';
+      }
+
       var muted = false;
       var ttsEnabled = true;
+      var labelsEnabled = true;
 
       var loadingImg = image("Images/Screens/loadScreen.png");
       var mainIntroImg = new Image();
@@ -233,15 +328,26 @@
 
       var muteImg = new Image();
       var unmuteImg = new Image();
+      var muteImgLabeled = new Image();
+      var unmuteImgLabeled = new Image();
       var ttsOnImg = new Image();
+      var ttsOnImgLabeled = new Image();
       var ttsOffImg = new Image();
+      var ttsOffImgLabeled = new Image();
       var pauseButtonImg = new Image();
+      var pauseButtonImgLabeled = new Image();
       var playButtonImg = new Image();
+      var playButtonImgLabeled = new Image();
       var level1Img = new Image();
       var level2Img = new Image();
       var level3Img = new Image();
       var restartButtonImg = new Image();
+      var restartButtonImgLabeled = new Image();
       var homeButtonImg = new Image();
+      var homeButtonImgLabeled = new Image();
+      var labelsButtonImg = new Image();
+      var labelsButtonOffImg = new Image();
+      var resumePauseImg = new Image();
 
       var bananaMatchImg = new Image();
       var bottleMatchImg = new Image();
@@ -346,15 +452,26 @@
 
         muteImg.onload = finishedLoading;
         unmuteImg.onload = finishedLoading;
+        muteImgLabeled.onload = finishedLoading;
+        unmuteImgLabeled.onload = finishedLoading;
         ttsOnImg.onload = finishedLoading;
+        ttsOnImgLabeled.onload = finishedLoading;
         ttsOffImg.onload = finishedLoading;
+        ttsOffImgLabeled.onload = finishedLoading;
         pauseButtonImg.onload = finishedLoading;
+        pauseButtonImgLabeled.onload = finishedLoading;
         playButtonImg.onload = finishedLoading;
+        playButtonImgLabeled.onload = finishedLoading;
         level1Img.onload = finishedLoading;
         level2Img.onload = finishedLoading;
         level3Img.onload = finishedLoading;
         restartButtonImg.onload = finishedLoading;
+        restartButtonImgLabeled.onload = finishedLoading;
         homeButtonImg.onload = finishedLoading;
+        homeButtonImg.onload = finishedLoading;
+        labelsButtonImg.onload = finishedLoading;
+        labelsButtonOffImg.onload = finishedLoading;
+        resumePauseImg.onload = finishedLoading;
 
         bananaMatchImg.onload = finishedLoading;
         bottleMatchImg.onload = finishedLoading;
@@ -441,24 +558,34 @@
         welcome1Img.src = "Images/Screens/welcome1.png";
         welcome2Img.src = "Images/Screens/welcome2.png";
         tutorial_introImg.src = "Images/Screens/tutorial_intro.png";
-        tutorialImg.src = "Images/Screens/tutorial.png";
+        tutorialImg.src = "Images/Screens/tutorial_Updated.png";
         sortingIntro1Img.src = "Images/Screens/sortingIntro1.png";
         sortingIntro2Img.src = "Images/Screens/sortingIntro2.png";
         sortingLevelSelectImg.src = "Images/Screens/chooseLevelSorting.png";
         endScreenSortingImg.src = "Images/Screens/endScreenSorting.png";
         pauseScreenImg.src = "Images/Screens/pauseScreen.png";
 
-        muteImg.src = "Images/Buttons/muteButton_Updated.png";
-        unmuteImg.src = "Images/Buttons/unmuteButton_Updated.png";
-        ttsOnImg.src = "Images/Buttons/disableTextToSpeechButton.png";
-        ttsOffImg.src = "Images/Buttons/enableTextToSpeechButton.png";
-        pauseButtonImg.src = "Images/Buttons/pauseButton_Updated.png";
-        playButtonImg.src = "Images/Buttons/playButton_Updated.png";
+        muteImg.src = "Images/Buttons/muteButton.png";
+        unmuteImg.src = "Images/Buttons/unmuteButton.png";
+        muteImgLabeled.src = "Images/Buttons/muteButton_Updated.png";
+        unmuteImgLabeled.src = "Images/Buttons/unmuteButton_Updated.png";
+        ttsOnImg.src = "Images/Buttons/disableTextToSpeechButton_Updated.png";
+        ttsOnImgLabeled.src = "Images/Buttons/disableTextToSpeechButton.png";
+        ttsOffImg.src = "Images/Buttons/enableTextToSpeechButton_Updated.png";
+        ttsOffImgLabeled.src = "Images/Buttons/enableTextToSpeechButton.png";
+        pauseButtonImg.src = "Images/Buttons/pauseButton.png";
+        pauseButtonImgLabeled.src = "Images/Buttons/pauseButton_Updated.png"
+        playButtonImg.src = "Images/Buttons/playButton.png";
+        playButtonImgLabeled.src = "Images/Buttons/playButton_Updated.png"
         level1Img.src = "Images/Buttons/level1.png";
         level2Img.src = "Images/Buttons/level2.png";
         level3Img.src = "Images/Buttons/level3.png";
-        restartButtonImg.src = "Images/Buttons/restartButton_Updated.png";
-        homeButtonImg.src = "Images/Buttons/homeButton_Updated.png";
+        restartButtonImg.src = "Images/Buttons/restartButton.png";
+        restartButtonImgLabeled.src = "Images/Buttons/restartButton_Updated.png"
+        homeButtonImg.src = "Images/Buttons/homeButton.png";
+        homeButtonImgLabeled.src = "Images/Buttons/homeButton_Updated.png"
+        labelsButtonImg.src = "Images/Buttons/labelButtonOn.png";
+        labelsButtonOffImg = "Images/Buttons/labelButtonOff.png";
 
         bananaMatchImg.src = "Images/Clear/bananaPeelClr.png";
         bottleMatchImg.src = "Images/Clear/bottleClr.png";
@@ -548,6 +675,11 @@
         sortingMusic.src = "Sound/sortingMusic.mp3";
         buttonSound.src = "Sound/buttonPop.mp3";
         tileMatchSound.src = "Sound/ding.mp3";
+
+        registerSound(backgroundMusic);
+        registerSound(sortingMusic);
+        registerSound(buttonSound);
+        registerSound(tileMatchSound);
       }
 
       var dragImg;
@@ -678,6 +810,13 @@
         ttsOnImg
       );
 
+      var labelsButton = new CircularButton(
+        canvas.width - soundButtonSize - soundButtonSize / 8,
+        soundButtonSize / 8,
+        soundButtonSize,
+        labelsButtonImg
+      );
+
       // Text area class for hoverable text regions
       class TextArea {
         constructor(x, y, width, height, text) {
@@ -758,7 +897,7 @@
         100,
         480,
         330,
-        "To select items, click the Space keybind to cycle through unsorted items, to store an item, press the 1, 2, 3, 4 keybinds respectively to store an item into a bin for sorting!"
+        "To select an item for sorting, press space bar to cycle through unsorted items, to store an item, press 1, 2, 3, or 4 to store an item into a bin for sorting!"
       );
 
       // Choose level screen text area
@@ -1461,7 +1600,7 @@
         var y = pos.y;
 
         if (currentState == state.MAININTRO) {
-          if (playButton.clicked(x, y)) {
+          if (playButton.clicked(x, y) && menuOP == false) {
             statusAnnouncer.textContent = "Welcome 1 screen.";
             if (!muted) {
               backgroundMusic.play();
@@ -1476,7 +1615,7 @@
           toggleAudio(x, y); 
 
         } else if (currentState == state.WELCOME1) {
-          if (playButton.clicked(x, y)) {
+          if (playButton.clicked(x, y) && menuOP == false) {
             statusAnnouncer.textContent = "Welcome 2 screen.";
             if (!muted) {
               buttonSound.load();
@@ -1490,7 +1629,7 @@
           toggleAudio(x, y);
 
         } else if (currentState == state.WELCOME2) {
-          if (playButton.clicked(x, y)) {
+          if (playButton.clicked(x, y) && menuOP == false) {
             statusAnnouncer.textContent = "Sorting intro 1 screen.";
             if (!muted) {
               buttonSound.load();
@@ -1507,7 +1646,7 @@
           toggleAudio(x, y);
           
         } else if (currentState == state.SORTINTRO1) {
-          if (playButton.clicked(x, y)) {
+          if (playButton.clicked(x, y) && menuOP == false) {
             statusAnnouncer.textContent = "Sorting intro 2 screen.";
             if (!muted) {
               buttonSound.load();
@@ -1525,7 +1664,7 @@
 
           toggleAudio(x, y);
         } else if (currentState == state.SORTINTRO2) {
-          if (playButton.clicked(x, y)) {
+          if (playButton.clicked(x, y) && menuOP == false) {
             statusAnnouncer.textContent = "Tutorial intro screen.";
             if (!muted) {
               buttonSound.load();
@@ -1543,7 +1682,7 @@
           
           toggleAudio(x, y);
         } else if (currentState == state.TUT_INTRO){
-          if (playButton.clicked(x, y)) {
+          if (playButton.clicked(x, y) && menuOP == false) {
             statusAnnouncer.textContent = "Tutorial screen.";
             if (!muted) {
               buttonSound.load();
@@ -1560,7 +1699,7 @@
 
           toggleAudio(x, y);
         }else if (currentState == state.TUTORIAL){
-          if (playButton.clicked(x, y)) {
+          if (playButton.clicked(x, y) && menuOP == false) {
             statusAnnouncer.textContent = "Level choosing screen.";
             if (!muted) {
               buttonSound.load();
@@ -1579,10 +1718,11 @@
           
           toggleAudio(x, y);
         } else if (currentState == state.SORTLEVEL) {
-          if (
+          if ((
             level1Button.clicked(x, y) ||
             level2Button.clicked(x, y) ||
-            level3Button.clicked(x, y)
+            level3Button.clicked(x, y) ) &&
+            menuOP == false
           ) {
             if (!muted) {
               buttonSound.load();
@@ -1662,7 +1802,8 @@
               }
 
               timer.pause();
-
+              showPauseVolumeControls(true);
+              
               // Grid layout: 2 rows x 3 columns with smaller buttons
               var pauseButtonSize = 70; // Smaller button size for pause screen
               var gridSpacing = 100; // Space between buttons
@@ -1697,6 +1838,7 @@
               }
 
               timer.unpause();
+              showPauseVolumeControls(false);
 
               pauseButton.image = pauseButtonImg;
               pauseButton.x = sidebarLocalXOrigin + binWidth * (1 / 8);
@@ -1833,6 +1975,10 @@
               dragImg = garbage[i].image;
 
               draggedGarbage = garbage[i];
+
+              //Selected tag updates when you click and drag 
+              const pickedName = imageBannerName(garbage[i].image);
+              setSelectedLabel(pickedName);
 
               switch (garbage[i].image) {
                 case bananaMatchImg:
@@ -2168,6 +2314,7 @@
                 draggedGarbage.type == landfill)
             ) {
               validPlacement = false;
+              showErrorBanner(draggedGarbage.image, draggedGarbage.type);
               statusAnnouncer.textContent = "Incorrect!";
               setTimeout(() => {statusAnnouncer.textContent = '';}, 1000);
 
@@ -2191,6 +2338,8 @@
               garbage.push(draggedGarbage);
             }
           }
+          //Reset the selection label once you are done clicking it
+          setSelectedLabel (null);
         }
 
         mouseDown = false;
@@ -2241,7 +2390,7 @@
       //function to handle non-mouse functioning of item selection
       function spaceHandler(e) {
         if (currentState == state.MAININTRO) {
-          if (e.key === "Space" || e.key === " ") {
+          if (e.key === "Space" || e.key === " " && menuOP == false) {
             statusAnnouncer.textContent = "Welcome 1 screen.";
             if (!muted) {
               backgroundMusic.play();
@@ -2256,7 +2405,7 @@
           toggleAudio(x, y); 
 
         } else if (currentState == state.WELCOME1) {
-          if (e.key === "Space" || e.key === " ") {
+          if (e.key === "Space" || e.key === " " && menuOP == false) {
             statusAnnouncer.textContent = "Welcome 2 screen.";
             if (!muted) {
               buttonSound.load();
@@ -2270,7 +2419,7 @@
           toggleAudio(x, y);
 
         } else if (currentState == state.WELCOME2) {
-          if (e.key === "Space" || e.key === " ") {
+          if (e.key === "Space" || e.key === " " && menuOP == false) {
             statusAnnouncer.textContent = "Sorting intro 1 screen.";
             if (!muted) {
               buttonSound.load();
@@ -2287,7 +2436,7 @@
           toggleAudio(x, y);
           
         } else if (currentState == state.SORTINTRO1) {
-          if (e.key === "Space" || e.key === " ") {
+          if (e.key === "Space" || e.key === " " && menuOP == false) {
             statusAnnouncer.textContent = "Sorting intro 2 screen.";
             if (!muted) {
               buttonSound.load();
@@ -2305,7 +2454,7 @@
 
           toggleAudio(x, y);
         } else if (currentState == state.SORTINTRO2) {
-          if (e.key === "Space" || e.key === " ") {
+          if (e.key === "Space" || e.key === " " && menuOP == false) {
             statusAnnouncer.textContent = "Tutorial intro screen.";
             if (!muted) {
               buttonSound.load();
@@ -2323,7 +2472,7 @@
           
           toggleAudio(x, y);
         } else if (currentState == state.TUT_INTRO){
-          if (e.key === "Space" || e.key === " ") {
+          if (e.key === "Space" || e.key === " " && menuOP == false) {
             statusAnnouncer.textContent = "Tutorial screen.";
             if (!muted) {
               buttonSound.load();
@@ -2340,7 +2489,7 @@
 
           toggleAudio(x, y);
         }else if (currentState == state.TUTORIAL){
-          if (e.key === "Space" || e.key === " ") {
+          if (e.key === "Space" || e.key === " " && menuOP == false) {
             statusAnnouncer.textContent = "Level choosing screen.";
             if (!muted) {
               buttonSound.load();
@@ -2501,8 +2650,62 @@
         }
       }
 
+      function toggleLabelsHandler(e) {
+        if (e.key === "l") {
+          e.preventDefault();
+          if (labelsEnabled) {
+            statusAnnouncer.textContent = "Labels disabled.";
+            labelsButton.image = labelsButtonOffImg;
+            playButton.image = playButtonImg;
+            if (!muted)  { muteButton.image = muteImg; }
+            else if (muted) { muteButton.image = unmuteImg; }
+            if (!ttsEnabled) { ttsButton.image = ttsOffImg; }
+            else if (ttsEnabled) { ttsButton.image = ttsOnImg; }
+            homeButton.image = homeButtonImg;
+            restartButton.image = restartButtonImg;
+            pauseButton.image = pauseButtonImg;
+            labelsEnabled = false;
+          } else {
+            statusAnnouncer.textContent = "Labels enabled.";
+            labelsButton.image = labelsButtonImg;
+            playButton.image = playButtonImgLabeled;            
+            if (!muted)  { muteButton.image = muteImgLabeled; }
+            else if (muted) { muteButton.image = unmuteImgLabeled; }
+            if (!ttsEnabled) { ttsButton.image = ttsOffImgLabeled; }
+            else if (ttsEnabled) { ttsButton.image = ttsOnImgLabeled; }
+            homeButton.image = homeButtonImgLabeled;
+            restartButton.image = restartButtonImgLabeled;
+            pauseButton.image = pauseButtonImgLabeled;
+            labelsEnabled = true;          
+          }
+        }
+      }
+
+      function showPauseVolumeControls(show){
+        var el = document.getElementById('pauseVolume');
+        if (!el) return;
+        if (show){
+          document.body.classList.add('ui-paused');
+          el.hidden = false;
+          el.setAttribute('aria-hidden','false');
+          el.style.display = 'flex';            
+          var s = document.getElementById('volumeSlider');
+          if (s){
+            s.value = Math.round(masterVolume * 100);
+            setTimeout(()=>{ try{ s.focus(); }catch(_){} }, 0);
+          }
+        } else {
+          document.body.classList.remove('ui-paused');
+          el.hidden = true;
+          el.setAttribute('aria-hidden','true');
+          el.style.display = 'none';            
+        }
+      }
+
       function actPauseMenu(e) {
         if(currentState == state.PLAYSORT) {
+          menuOP = false;
+          showPauseVolumeControls(false);
           if(e.key === "Escape" && itemsRemaining >= 1) {
             e.preventDefault();
 
@@ -2514,6 +2717,7 @@
               }
 
               timer.pause();
+              showPauseVolumeControls(true);
 
               // Grid layout: 2 rows x 3 columns with smaller buttons
               var pauseButtonSize = 70; // Smaller button size for pause screen
@@ -2549,6 +2753,7 @@
               }
 
               timer.unpause();
+              showPauseVolumeControls(false);
 
               pauseButton.image = pauseButtonImg;
               pauseButton.x = sidebarLocalXOrigin + binWidth * (1 / 8);
@@ -2561,12 +2766,58 @@
               ttsButton.size = soundButtonSize;
             }
           }
+        } else {
+          if(e.key === "Escape") {
+            e.preventDefault();
+            
+            if (menuOP == false) {
+              menuOP = true;
+              showPauseVolumeControls(true);
+              
+              var pauseButtonSize = 70; // Smaller button size for pause screen
+              var gridSpacing = 100; // Space between buttons
+              var gridStartX = canvas.width / 2 - gridSpacing - 30;
+              var gridStartY = canvas.height / 2 - 50; // Moved down to avoid covering text
+              
+              pauseButton.image = playButtonImg;
+              pauseButton.x = gridStartX - gridSpacing;
+              pauseButton.y = gridStartY;
+              pauseButton.size = pauseButtonSize;
+              
+              restartButton.x = gridStartX;
+              restartButton.y = gridStartY;
+              restartButton.size = pauseButtonSize;
+
+              homeButton.x = gridStartX + gridSpacing;
+              homeButton.y = gridStartY;
+              homeButton.size = pauseButtonSize;
+
+              muteButton.x = gridStartX - gridSpacing;
+              muteButton.y = gridStartY + gridSpacing;
+              muteButton.size = pauseButtonSize;
+
+              ttsButton.x = gridStartX;
+              ttsButton.y = gridStartY + gridSpacing;
+              ttsButton.size = pauseButtonSize;
+            } else {
+              menuOP = false;
+              muteButton.x = canvas.width - soundButtonSize - soundButtonSize / 8;
+              muteButton.y = soundButtonSize / 8;
+              muteButton.size = soundButtonSize;
+
+              // Reset TTS button to original position
+              ttsButton.x = canvas.width - soundButtonSize - soundButtonSize / 8;
+              ttsButton.y = soundButtonSize / 8 + soundButtonSize + 10;
+              ttsButton.size = soundButtonSize;
+            }
+          }
         }
       }
 
       function pauseMenuHandler(e) {
         if(currentState == state.PLAYSORT) {
           if(e.key === "r" && timer.isPaused()) {
+            showPauseVolumeControls(false);
             statusAnnouncer.textContent = "Restarting game. Level choosing screen.";
             if (!muted) {
               buttonSound.load();
@@ -2578,6 +2829,7 @@
             }
 
             currentState = state.SORTLEVEL;
+            menuOP = false;
 
             homeButton.x = canvas.width / 3 + originalPlayButtonSize / 2;
             homeButton.y =
@@ -2600,6 +2852,7 @@
             ttsButton.y = soundButtonSize / 8 + soundButtonSize + 10;
             ttsButton.size = soundButtonSize;
           } else if(e.key === "h" && timer.isPaused()) {
+            showPauseVolumeControls(false);
             statusAnnouncer.textContent = "Returning to main screen.";
             if (!muted) {
               buttonSound.load();
@@ -2611,6 +2864,64 @@
             }
 
             currentState = state.SORTINTRO1;
+            menuOP = false;
+
+            // Reset play button position for SORTINTRO1 screen
+            playButton.x = canvas.width / 2 - originalPlayButtonSize / 2;
+            playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
+            playButton.size = originalPlayButtonSize;
+            currentPlayButtonSize = originalPlayButtonSize;
+            increasePlayButtonSize = true;
+
+            homeButton.x = canvas.width / 3 + originalPlayButtonSize / 2;
+            homeButton.y =
+              canvas.height / 2 +
+              canvas.height / 4 -
+              originalPlayButtonSize / 2;
+
+            restartButton.x = canvas.width / 4 - originalPlayButtonSize / 2;
+            restartButton.y =
+              canvas.height / 2 +
+              canvas.height / 4 -
+              originalPlayButtonSize / 2;
+
+            muteButton.x = canvas.width - soundButtonSize - soundButtonSize / 8;
+            muteButton.y = soundButtonSize / 8;
+            muteButton.size = soundButtonSize;
+
+            // Reset TTS button to original position
+            ttsButton.x = canvas.width - soundButtonSize - soundButtonSize / 8;
+            ttsButton.y = soundButtonSize / 8 + soundButtonSize + 10;
+            ttsButton.size = soundButtonSize;
+          }
+        } else {
+          if(e.key === "r" && menuOP == true) {
+            currentState = state.SORTLEVEL;
+            menuOP = false;
+
+            homeButton.x = canvas.width / 3 + originalPlayButtonSize / 2;
+            homeButton.y =
+              canvas.height / 2 +
+              canvas.height / 4 -
+              originalPlayButtonSize / 2;
+
+            restartButton.x = canvas.width / 4 - originalPlayButtonSize / 2;
+            restartButton.y =
+              canvas.height / 2 +
+              canvas.height / 4 -
+              originalPlayButtonSize / 2;
+
+            muteButton.x = canvas.width - soundButtonSize - soundButtonSize / 8;
+            muteButton.y = soundButtonSize / 8;
+            muteButton.size = soundButtonSize;
+
+            // Reset TTS button to original position
+            ttsButton.x = canvas.width - soundButtonSize - soundButtonSize / 8;
+            ttsButton.y = soundButtonSize / 8 + soundButtonSize + 10;
+            ttsButton.size = soundButtonSize;
+          } else if(e.key === "h" && menuOP == true) {
+            currentState = state.SORTINTRO1;
+            menuOP = false;
 
             // Reset play button position for SORTINTRO1 screen
             playButton.x = canvas.width / 2 - originalPlayButtonSize / 2;
@@ -2721,6 +3032,7 @@
               speechSynthesis.cancel();
               speechSynthesis.speak(incorrectKeyboardUtterance);
             }
+            showErrorBanner(selected.image, selected.type);
           }
         }
       }
@@ -2753,12 +3065,14 @@
           if (ttsButton.clicked(x, y) && ttsEnabled) {
             statusAnnouncer.textContent = "Text-to-speech disabled.";
             ttsEnabled = false;
-            ttsButton.image = ttsOffImg;
+            if (!labelsEnabled) { ttsButton.image = ttsOffImg; }
+            else if (labelsEnabled) { ttsButton.image = ttsOffImgLabeled; }
             speechSynthesis.cancel();
           } else if (ttsButton.clicked(x, y) && !ttsEnabled) {
             statusAnnouncer.textContent = "Text-to-speech enabled.";
             ttsEnabled = true;
-            ttsButton.image = ttsOnImg;
+            if (!labelsEnabled) { ttsButton.image = ttsOnImg; }
+            else if (labelsEnabled) { ttsButton.image = ttsOnImgLabeled; }
           }
         }
       }
@@ -3536,54 +3850,89 @@
       }
 
       function draw() {
+        try {
+          if (typeof timer !== "undefined" && !timer.isPaused() && !(window.menuOP === true)) {
+            var pv = document.getElementById("pauseVolume");
+            if (pv && !pv.hidden) {
+              pv.hidden = true;
+              pv.setAttribute("aria-hidden", "true");
+              pv.style.display = "none";
+              document.body.classList.remove("ui-paused");
+            }
+          }
+        } catch (e) {}
         if (currentState == state.LOADING) {
           drawLoadingScreen();
         } else if (currentState == state.MAININTRO) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
           drawMainIntroScreen();
+          if(menuOP == true) {
+            drawPauseScreen();
+          }
 
           changePlayButtonSize();
         } else if (currentState == state.WELCOME1) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
           drawWelcome1Screen();
+          if(menuOP == true) {
+            drawPauseScreen();
+          }
 
           changePlayButtonSize();
         } else if (currentState == state.WELCOME2) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
           drawWelcome2Screen();
+          if(menuOP == true) {
+            drawPauseScreen();
+          }
 
           changePlayButtonSize();
         } else if (currentState == state.SORTINTRO1) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
           drawSortingIntro1();
+          if(menuOP == true) {
+            drawPauseScreen();
+          }
 
           changePlayButtonSize();
         } else if (currentState == state.SORTINTRO2) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
           drawSortingIntro2();
+          if(menuOP == true) {
+            drawPauseScreen();
+          }
 
           changePlayButtonSize();
         } else if (currentState == state.TUT_INTRO){
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
           drawtutorial_introScreen();
+          if(menuOP == true) {
+            drawPauseScreen();
+          }
 
           changePlayButtonSize();
         } else if (currentState == state.TUTORIAL){
            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
           drawtutorialScreen();
+          if(menuOP == true) {
+            drawPauseScreen();
+          }
 
           changePlayButtonSize();         
         } else if (currentState == state.SORTLEVEL) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
           drawSortingChooseLevelScreen();
+          if(menuOP == true) {
+            drawPauseScreen();
+          }
 
           changeLevelButtonSize();
         } else if (currentState == state.PLAYSORT) {
@@ -3774,6 +4123,68 @@
       loadAssets();
 
       draw();
+
+      function typeToLabel(t){
+        //get names of docs
+        return ["Paper", "Plastic, Glass & Metals", "Organics", "Landfill"][t] || "Unkown";
+      }
+      
+      function imageBannerName(img) {
+        // Accept either an <img> object or a string URL
+        const src =
+        typeof img === "string"
+          ? img.trim()
+          : img && typeof img.src === "string"
+          ? img.src.trim()
+          : "";
+
+        if (!src) return "Item";
+
+        // Strip path, query, and hash
+        const filename = src.split("/").pop().split("?")[0].split("#")[0] || "";
+        if (!filename) return "Item";
+
+        // Drop extension + trailing style markers
+        const base = filename
+        .replace(/\.(png|jpe?g|gif|webp|svg)$/i, "")
+        .replace(/(Clr|GS)$/i, "");
+
+        // Normalize separators and camelCase into spaces
+        const spaced = base
+        .replace(/[_-]+/g, " ")
+        .replace(/([a-z])([A-Z])/g, "$1 $2")
+        .replace(/\s+/g, " ")
+        .trim();
+
+        if (!spaced) return "Item";
+
+        // Title case
+        return spaced.replace(/\b\w/g, (c) => c.toUpperCase());
+      }
+      
+      function showErrorBanner(itemImg, correctType){
+        const itemName = imageBannerName(itemImg);
+        const suggestion = typeToLabel(correctType);
+        
+        errorBanner.classList.remove('show');
+        void errorBanner.offsetWidth;
+        
+        errorBanner.textContent = `Incorrect bin for ${itemName}. Put it in ${suggestion}.`;
+        
+        statusAnnouncer.textContent = `Incorrect bin. Suggested: ${suggestion}.`;
+        errorBanner.classList.add("show");
+        
+        if(errorBannerTimer) clearTimeout(errorBannerTimer);
+        errorBannerTimer = setTimeout(() => {
+          errorBanner.classList.remove("show");
+        }, 1000);
+      }
+      
+      function setSelectedLabel(name){
+        const display = document.getElementById('selectedItem');
+        display.textContent = 'Selected: ' + (name || 'None');
+      }
+
     </script>
   </body>
 </html>
