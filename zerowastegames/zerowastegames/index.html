@@ -835,9 +835,9 @@
       restartButton.name = "Restart Button";
 
       var timerButton = new CircularButton(
-        canvas.width / 3 + originalPlayButtonSize / 2,
-        canvas.height / 2 + canvas.height / 4 - originalPlayButtonSize / 2,
-        originalPlayButtonSize,
+        canvas.width / 2.37 + originalPlayButtonSize / 2,
+        canvas.height / 3 + canvas.height / 4 - originalPlayButtonSize / 2,
+        originalPlayButtonSize / 1.5,
         timerOnImg
       );
 
@@ -1900,6 +1900,10 @@
               ttsButton.y = gridStartY + gridSpacing;
               ttsButton.size = pauseButtonSize;
 
+              timerButton.x = gridStartX + gridSpacing + gridSpacing;
+              timerButton.y = gridstartY + gridSpacing;
+              timerButton.size = pauseButtonSize;
+
               //The 3 buttons to decrease, increase and reset the fall speed
               //new row for the fall speed buttons
               const row3 = gridStartY + 2 * gridSpacing;
@@ -2004,6 +2008,24 @@
             ttsButton.x = canvas.width - soundButtonSize - soundButtonSize / 8;
             ttsButton.y = soundButtonSize / 8 + soundButtonSize + 10;
             ttsButton.size = soundButtonSize;
+          }
+
+          if (timerButton.clicked(x, y)) {
+            timeIsPaused = !timeIsPaused;
+            if (timeIsPaused){
+              timer.unpause();
+              statusAnnouncer.textContent = "Timer unpaused";
+              timerButton.image = timerOnImg;
+            } else {
+              timer.pause();
+              statusAnnouncer.textContent = "Timer paused";
+              timerButton.image = timerOffImg;
+            }
+
+            if (!muted) {
+              buttonSound.load();
+              buttonSound.play();
+            }
           }
 
           if (homeButton.clicked(x, y) && timer.isPaused()) {
@@ -2270,7 +2292,7 @@
           }
         }
 
-        // CHECK RESTART AND HOME BUTTONS (visible during pause or end screen)
+        // CHECK RESTART, TIMER AND HOME BUTTONS (visible during pause or end screen)
         if (!nowHoveringButton && (currentState === state.PLAYSORT && timer.isPaused() || currentState === state.END)) {
           if (currentState === state.PLAYSORT && gameIsPaused) {
             pauseButton.name = "Resume Button";
@@ -2283,6 +2305,9 @@
           }
           if (!nowHoveringButton && homeButton.clicked(x, y)) {
             nowHoveringButton = homeButton;
+          }
+          if (!nowHoveringButton && timerButton.clicked(x, y)) {
+            nowHoveringButton = timerButton;
           }
 
           if(!nowHoveringButton && timer.isPaused()){
@@ -2790,11 +2815,15 @@
           pauseMenuOpen = !pauseMenuOpen;
 
           if (timer.isPaused()){
+            timeIsPaused = false;
             statusAnnouncer.textContent = "Timer unpaused";
             timer.unpause();
+            timerButton.image = timerOnImg;
           }else{
+            timeIsPaused = true;
             statusAnnouncer.textContent = "Timer paused";
             timer.pause();
+            timerButton.image = timerOffImg;
           }
           return false;
         }
@@ -2920,7 +2949,9 @@
 
             } else {
               gameIsPaused = false;
-              timer.unpause();
+              if (!timer.isPaused()){
+                timer.unpause();
+              }
               statusAnnouncer.textContent = "Game resumed";
               if (!muted) {
                 buttonSound.load();
@@ -4121,7 +4152,7 @@
           if (
             timer.getRunTime() > lastDropTime &&
             garbageQueue.length > 0 &&
-            !timer.isPaused()
+            !gameIsPaused
           ) {
             garbage.push(garbageQueue.pop());
             lastDropTime += dropGarbageInterval;
