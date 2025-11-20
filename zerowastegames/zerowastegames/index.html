@@ -367,6 +367,7 @@
       var incrFallSpeedImg = new Image();
       var resetFallSpeedImg = new Image();
 
+      var resumePauseImgLabeled = new Image();
 
       var bananaMatchImg = new Image();
       var bottleMatchImg = new Image();
@@ -491,6 +492,7 @@
         labelsButtonImg.onload = finishedLoading;
         labelsButtonOffImg.onload = finishedLoading;
         resumePauseImg.onload = finishedLoading;
+        resumePauseImgLabeled.onload = finishedLoading;
 
         bananaMatchImg.onload = finishedLoading;
         bottleMatchImg.onload = finishedLoading;
@@ -612,6 +614,8 @@
         decFallSpeedImg.src = "Images/Buttons/DecFallSpeedImg.png";
         incrFallSpeedImg.src = "Images/Buttons/IncrFallSpeedImg.png";
         resetFallSpeedImg.src = "Images/Buttons/resetFallSpeedImg.png";
+        resumePauseImg.src = "Images/Buttons/pauseResumeButton.png";
+        resumePauseImgLabeled.src = "Images/Buttons/pauseResumeButton_Updated.png";
 
         bananaMatchImg.src = "Images/Clear/bananaPeelClr.png";
         bottleMatchImg.src = "Images/Clear/bottleClr.png";
@@ -1651,7 +1655,7 @@
             currentState = state.WELCOME1;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
           }
           toggleAudio(x, y); 
 
@@ -1665,7 +1669,7 @@
             currentState = state.WELCOME2;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
           }
           toggleAudio(x, y);
 
@@ -1682,7 +1686,7 @@
             playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
           }
           toggleAudio(x, y);
           
@@ -1700,7 +1704,7 @@
             playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
           }
 
           toggleAudio(x, y);
@@ -1718,7 +1722,7 @@
             playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
           }
           
           toggleAudio(x, y);
@@ -1735,7 +1739,7 @@
             playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
           }
 
           toggleAudio(x, y);
@@ -1851,7 +1855,7 @@
               var gridStartX = canvas.width / 2 - gridSpacing - 30;
               var gridStartY = canvas.height / 2 - 80; // Moved down to avoid covering text
 
-              pauseButton.image = playButtonImg;
+              pauseButton.image = resumePauseImg;
               pauseButton.x = gridStartX - gridSpacing;
               pauseButton.y = gridStartY;
               pauseButton.size = pauseButtonSize;
@@ -1996,7 +2000,7 @@
             playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
 
             homeButton.x = canvas.width / 3 + originalPlayButtonSize / 2;
             homeButton.y =
@@ -2044,7 +2048,7 @@
             playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
           }
 
           toggleAudio(x, y);
@@ -2505,7 +2509,7 @@
             currentState = state.WELCOME1;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
           }
           toggleAudio(x, y); 
 
@@ -2519,7 +2523,7 @@
             currentState = state.WELCOME2;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
           }
           toggleAudio(x, y);
 
@@ -2554,7 +2558,7 @@
             playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
           }
 
           toggleAudio(x, y);
@@ -2572,7 +2576,7 @@
             playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
           }
           
           toggleAudio(x, y);
@@ -2589,7 +2593,7 @@
             playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
           }
 
           toggleAudio(x, y);
@@ -2768,7 +2772,8 @@
             else if (ttsEnabled) { ttsButton.image = ttsOnImg; }
             homeButton.image = homeButtonImg;
             restartButton.image = restartButtonImg;
-            pauseButton.image = pauseButtonImg;
+            if(menuOP) { pauseButton.image = resumePauseImg; }
+            else { pauseButton.image = pauseButtonImg;}
             labelsEnabled = false;
           } else {
             statusAnnouncer.textContent = "Labels enabled.";
@@ -2780,7 +2785,8 @@
             else if (ttsEnabled) { ttsButton.image = ttsOnImgLabeled; }
             homeButton.image = homeButtonImgLabeled;
             restartButton.image = restartButtonImgLabeled;
-            pauseButton.image = pauseButtonImgLabeled;
+            if(menuOP) { pauseButton.image = resumePauseImgLabeled; }
+            else { pauseButton.image = pauseButtonImgLabeled;}
             labelsEnabled = true;          
           }
         }
@@ -2830,7 +2836,6 @@
               var gridStartX = canvas.width / 2 - gridSpacing - 30;
               var gridStartY = canvas.height / 2 - 80; // Moved down to avoid covering text //changed from 50 to 80
 
-              pauseButton.image = playButtonImg;
               pauseButton.x = gridStartX - gridSpacing;
               pauseButton.y = gridStartY;
               pauseButton.size = pauseButtonSize;
@@ -2877,7 +2882,6 @@
               timer.unpause();
               showPauseVolumeControls(false);
 
-              pauseButton.image = pauseButtonImg;
               pauseButton.x = sidebarLocalXOrigin + binWidth * (1 / 8);
               pauseButton.y = canvas.height * (7 / 16);
               pauseButton.size = sortButtonSize;
@@ -2901,7 +2905,8 @@
               var gridStartX = canvas.width / 2 - gridSpacing - 30;
               var gridStartY = canvas.height / 2 - 50; // Moved down to avoid covering text
               
-              pauseButton.image = playButtonImg;
+              if(!labelsEnabled)  { pauseButton.image = resumePauseImg; }
+              else { pauseButton.image = resumePauseImgLabeled; }
               pauseButton.x = gridStartX - gridSpacing;
               pauseButton.y = gridStartY;
               pauseButton.size = pauseButtonSize;
@@ -2922,7 +2927,7 @@
               ttsButton.y = gridStartY + gridSpacing;
               ttsButton.size = pauseButtonSize;
             } else {
-              menuOP = false;
+              menuOP = false;             
               muteButton.x = canvas.width - soundButtonSize - soundButtonSize / 8;
               muteButton.y = soundButtonSize / 8;
               muteButton.size = soundButtonSize;
@@ -2993,7 +2998,7 @@
             playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
 
             homeButton.x = canvas.width / 3 + originalPlayButtonSize / 2;
             homeButton.y =
@@ -3050,7 +3055,7 @@
             playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
 
             homeButton.x = canvas.width / 3 + originalPlayButtonSize / 2;
             homeButton.y =
@@ -3880,7 +3885,7 @@
       }
 
       function changePlayButtonSize() {
-        if (currentPlayButtonSize < 125 && increasePlayButtonSize) {
+        if (currentPlayButtonSize < 125 /*&& increasePlayButtonSize*/) {
           currentPlayButtonSize += 0.5;
 
           playButton.x -= 0.25;
@@ -3889,7 +3894,7 @@
           playButton.size = currentPlayButtonSize;
 
           if (currentPlayButtonSize >= 125) {
-            increasePlayButtonSize = false;
+            //increasePlayButtonSize = false;
           }
         } else {
           currentPlayButtonSize -= 0.5;
@@ -3900,7 +3905,7 @@
           playButton.size = currentPlayButtonSize;
 
           if (currentPlayButtonSize <= 100) {
-            increasePlayButtonSize = true;
+            //increasePlayButtonSize = true;
           }
         }
       }
@@ -3959,7 +3964,7 @@
         }
       }
 
-      function changeRestartAndHomeButtonSize() {
+      /* function changeRestartAndHomeButtonSize() {
         if (currentPlayButtonSize < 125 && increasePlayButtonSize) {
           currentPlayButtonSize += 0.5;
 
@@ -3993,7 +3998,7 @@
             increasePlayButtonSize = true;
           }
         }
-      }
+      }*/
 
       function draw() {
         try {
