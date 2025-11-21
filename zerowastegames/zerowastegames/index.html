@@ -1977,6 +1977,8 @@
 
           if (restartButton.clicked(x, y) && gameIsPaused) {
             statusAnnouncer.textContent = "Restarting game. Level choosing screen.";
+            menuOP = false;
+            gameIsPaused = false;
             if (!muted) {
               buttonSound.load();
               buttonSound.play();
@@ -2010,6 +2012,30 @@
             ttsButton.size = soundButtonSize;
           }
 
+          if (pauseButton.clicked(x, y) && timer.isPaused()) {
+              gameIsPaused = false;
+              menuOP = false;
+              if (!timer.isPaused()){
+                timer.unpause();
+              }
+              statusAnnouncer.textContent = "Game resumed";
+              if (!muted) {
+                buttonSound.load();
+                buttonSound.play();
+              }
+
+              showPauseVolumeControls(false);
+
+              pauseButton.x = sidebarLocalXOrigin + binWidth * (1 / 8);
+              pauseButton.y = canvas.height * (7 / 16);
+              pauseButton.size = sortButtonSize;
+
+              // Reset TTS button to original position (not visible during active gameplay)
+              ttsButton.x = canvas.width - soundButtonSize - soundButtonSize / 8;
+              ttsButton.y = soundButtonSize / 8 + soundButtonSize + 10;
+              ttsButton.size = soundButtonSize;
+          }
+          
           if (timerButton.clicked(x, y)) {
             timeIsPaused = !timeIsPaused;
             if (timeIsPaused){
@@ -2030,6 +2056,8 @@
 
           if (homeButton.clicked(x, y) && timer.isPaused()) {
             statusAnnouncer.textContent = "Returning to main screen.";
+            menuOP = false;
+            gameIsPaused = false;
             if (!muted) {
               buttonSound.load();
               buttonSound.play();
@@ -3027,7 +3055,8 @@
       function pauseMenuHandler(e) {
         if (e.key === "r" && menuOP == true){
           e.preventDefault();
-          gameIsPaused = false; 
+          gameIsPaused = false;
+          menuOP = false; 
           showPauseVolumeControls(false);
           statusAnnouncer.textContent = "Restarting game. Level choosing screen.";
           if (!muted) {
@@ -3040,7 +3069,6 @@
           }
 
           currentState = state.SORTLEVEL;
-          menuOP = false;
 
           homeButton.x = canvas.width / 3 + originalPlayButtonSize / 2;
           homeButton.y = canvas.height / 2 + canvas.height / 4 - originalPlayButtonSize / 2;
@@ -3056,9 +3084,9 @@
           ttsButton.x = canvas.width - soundButtonSize - soundButtonSize / 8;
           ttsButton.y = soundButtonSize / 8 + soundButtonSize + 10;
           ttsButton.size = soundButtonSize;
-        } else if (e.key === "h" && menuOp == true){
-          e.preventDefault();
+        } else if (e.key === "h" && menuOP == true){
           gameIsPaused = false;
+          menuOP = false;
           showPauseVolumeControls(false);
           statusAnnouncer.textContent = "Returning to main screen.";
           if (!muted) {
@@ -3071,7 +3099,6 @@
           }
 
           currentState = state.SORTINTRO1;
-          menuOP = false;
 
           // Reset play button position for SORTINTRO1 screen
           playButton.x = canvas.width / 2 - originalPlayButtonSize / 2;
