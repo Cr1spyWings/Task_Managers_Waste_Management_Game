@@ -147,7 +147,7 @@
       document.addEventListener("keyup", toggleTTSHandler, false);
       document.addEventListener("keyup", actPauseMenu, false);
       document.addEventListener("keyup", pauseMenuHandler, false);
-      document.addEventListener("keyup", toggleLabelsHandler, false);
+      //document.addEventListener("keyup", toggleLabelsHandler, false);
       document.addEventListener("keyup", timerToggleHandler, false);
 
       (function(){
@@ -331,7 +331,7 @@
 
       var muted = false;
       var ttsEnabled = true;
-      var labelsEnabled = true;
+      //var labelsEnabled = true;
 
       var loadingImg = image("Images/Screens/loadScreen.png");
       var mainIntroImg = new Image();
@@ -346,36 +346,36 @@
       var pauseScreenImg = new Image();
 
       var timerOffImg = new Image();
-      var timerOffImgLabeled = new Image();
+      //var timerOffImgLabeled = new Image();
       var timerOnImg = new Image();
-      var timerOnImgLabeled = new Image();
+      //var timerOnImgLabeled = new Image();
       var muteImg = new Image();
       var unmuteImg = new Image();
-      var muteImgLabeled = new Image();
-      var unmuteImgLabeled = new Image();
+      //var muteImgLabeled = new Image();
+      //var unmuteImgLabeled = new Image();
       var ttsOnImg = new Image();
-      var ttsOnImgLabeled = new Image();
+      //var ttsOnImgLabeled = new Image();
       var ttsOffImg = new Image();
-      var ttsOffImgLabeled = new Image();
+      //var ttsOffImgLabeled = new Image();
       var pauseButtonImg = new Image();
-      var pauseButtonImgLabeled = new Image();
+      //var pauseButtonImgLabeled = new Image();
       var playButtonImg = new Image();
-      var playButtonImgLabeled = new Image();
+      //var playButtonImgLabeled = new Image();
       var level1Img = new Image();
       var level2Img = new Image();
       var level3Img = new Image();
       var restartButtonImg = new Image();
-      var restartButtonImgLabeled = new Image();
+      //var restartButtonImgLabeled = new Image();
       var homeButtonImg = new Image();
-      var homeButtonImgLabeled = new Image();
-      var labelsButtonImg = new Image();
-      var labelsButtonOffImg = new Image();
+      //var homeButtonImgLabeled = new Image();
+      //var labelsButtonImg = new Image();
+      //var labelsButtonOffImg = new Image();
       var resumePauseImg = new Image();
       var decFallSpeedImg = new Image();
       var incrFallSpeedImg = new Image();
       var resetFallSpeedImg = new Image();
 
-      var resumePauseImgLabeled = new Image();
+      //var resumePauseImgLabeled = new Image();
 
       var bananaMatchImg = new Image();
       var bottleMatchImg = new Image();
@@ -479,32 +479,32 @@
         pauseScreenImg.onload = finishedLoading;
 
         timerOffImg.onload = finishedLoading;
-        timerOffImgLabeled.onload = finishedLoading;
+        //timerOffImgLabeled.onload = finishedLoading;
         timerOnImg.onload = finishedLoading;
-        timerOnImgLabeled.onload = finishedLoading;
+        //timerOnImgLabeled.onload = finishedLoading;
         muteImg.onload = finishedLoading;
         unmuteImg.onload = finishedLoading;
-        muteImgLabeled.onload = finishedLoading;
-        unmuteImgLabeled.onload = finishedLoading;
+        //muteImgLabeled.onload = finishedLoading;
+        //unmuteImgLabeled.onload = finishedLoading;
         ttsOnImg.onload = finishedLoading;
-        ttsOnImgLabeled.onload = finishedLoading;
+        //ttsOnImgLabeled.onload = finishedLoading;
         ttsOffImg.onload = finishedLoading;
-        ttsOffImgLabeled.onload = finishedLoading;
+        //ttsOffImgLabeled.onload = finishedLoading;
         pauseButtonImg.onload = finishedLoading;
-        pauseButtonImgLabeled.onload = finishedLoading;
+        //pauseButtonImgLabeled.onload = finishedLoading;
         playButtonImg.onload = finishedLoading;
-        playButtonImgLabeled.onload = finishedLoading;
+        //playButtonImgLabeled.onload = finishedLoading;
         level1Img.onload = finishedLoading;
         level2Img.onload = finishedLoading;
         level3Img.onload = finishedLoading;
         restartButtonImg.onload = finishedLoading;
-        restartButtonImgLabeled.onload = finishedLoading;
+        //restartButtonImgLabeled.onload = finishedLoading;
         homeButtonImg.onload = finishedLoading;
         homeButtonImg.onload = finishedLoading;
-        labelsButtonImg.onload = finishedLoading;
-        labelsButtonOffImg.onload = finishedLoading;
+        //labelsButtonImg.onload = finishedLoading;
+        //labelsButtonOffImg.onload = finishedLoading;
         resumePauseImg.onload = finishedLoading;
-        resumePauseImgLabeled.onload = finishedLoading;
+        //resumePauseImgLabeled.onload = finishedLoading;
 
         bananaMatchImg.onload = finishedLoading;
         bottleMatchImg.onload = finishedLoading;
@@ -600,38 +600,38 @@
         sortingIntro2Img.src = "Images/Screens/sortingIntro2.png";
         sortingLevelSelectImg.src = "Images/Screens/chooseLevelSorting.png";
         endScreenSortingImg.src = "Images/Screens/endScreenSorting.png";
-        pauseScreenImg.src = "Images/Screens/pauseScreen.png";
+        pauseScreenImg.src = "Images/Screens/settingsScreen.png";
 
-        timerOffImg.src = "Images/Buttons/TimerButtonOff.png";
-        timerOffImgLabeled.src = "Images/Buttons/TimerButtonOff_Updated.png";
-        timerOnImg.src = "Images/Buttons/TimerButton.png";
-        timerOnImgLabeled.src = "Images/Buttons/TimerButton_Updated.png"
-        muteImg.src = "Images/Buttons/muteButton.png";
-        unmuteImg.src = "Images/Buttons/unmuteButton.png";
-        muteImgLabeled.src = "Images/Buttons/muteButton_Updated.png";
-        unmuteImgLabeled.src = "Images/Buttons/unmuteButton_Updated.png";
-        ttsOnImg.src = "Images/Buttons/disableTextToSpeechButton_Updated.png";
-        ttsOnImgLabeled.src = "Images/Buttons/disableTextToSpeechButton.png";
-        ttsOffImg.src = "Images/Buttons/enableTextToSpeechButton_Updated.png";
-        ttsOffImgLabeled.src = "Images/Buttons/enableTextToSpeechButton.png";
-        pauseButtonImg.src = "Images/Buttons/pauseButton.png";
-        pauseButtonImgLabeled.src = "Images/Buttons/pauseButton_Updated.png"
-        playButtonImg.src = "Images/Buttons/playButton.png";
-        playButtonImgLabeled.src = "Images/Buttons/playButton_Updated.png"
+        timerOffImg.src = "Images/Buttons/TimerButtonOff_Updated.png";
+        //timerOffImgLabeled.src = "Images/Buttons/TimerButtonOff_Updated.png";
+        timerOnImg.src = "Images/Buttons/TimerButton_Updated.png";
+        //timerOnImgLabeled.src = "Images/Buttons/TimerButton_Updated.png";
+        muteImg.src = "Images/Buttons/muteButton_Updated.png";
+        unmuteImg.src = "Images/Buttons/unmuteButton_Updated.png";
+        //muteImgLabeled.src = "Images/Buttons/muteButton_Updated.png";
+        //unmuteImgLabeled.src = "Images/Buttons/unmuteButton_Updated.png";
+        ttsOnImg.src = "Images/Buttons/disableTextToSpeechButton.png";
+        //ttsOnImgLabeled.src = "Images/Buttons/disableTextToSpeechButton.png";
+        ttsOffImg.src = "Images/Buttons/enableTextToSpeechButton.png";
+        //ttsOffImgLabeled.src = "Images/Buttons/enableTextToSpeechButton.png";
+        pauseButtonImg.src = "Images/Buttons/SettingsButton_Updated.png";
+        //pauseButtonImgLabeled.src = "Images/Buttons/pauseButton_Updated.png";
+        playButtonImg.src = "Images/Buttons/playButton_Updated.png";
+        //playButtonImgLabeled.src = "Images/Buttons/playButton_Updated.png";
         level1Img.src = "Images/Buttons/level1.png";
         level2Img.src = "Images/Buttons/level2.png";
         level3Img.src = "Images/Buttons/level3.png";
-        restartButtonImg.src = "Images/Buttons/restartButton.png";
-        restartButtonImgLabeled.src = "Images/Buttons/restartButton_Updated.png"
-        homeButtonImg.src = "Images/Buttons/homeButton.png";
-        homeButtonImgLabeled.src = "Images/Buttons/homeButton_Updated.png"
-        labelsButtonImg.src = "Images/Buttons/labelButtonOn.png";
-        labelsButtonOffImg.src = "Images/Buttons/labelButtonOff.png";
+        restartButtonImg.src = "Images/Buttons/restartButton_Updated.png";
+        //restartButtonImgLabeled.src = "Images/Buttons/restartButton_Updated.png";
+        homeButtonImg.src = "Images/Buttons/homeButton_Updated.png";
+        //homeButtonImgLabeled.src = "Images/Buttons/homeButton_Updated.png";
+        //labelsButtonImg.src = "Images/Buttons/labelButtonOn.png";
+        //labelsButtonOffImg.src = "Images/Buttons/labelButtonOff.png";
         decFallSpeedImg.src = "Images/Buttons/DecFallSpeedImg.png";
         incrFallSpeedImg.src = "Images/Buttons/IncrFallSpeedImg.png";
         resetFallSpeedImg.src = "Images/Buttons/resetFallSpeedImg.png";
-        resumePauseImg.src = "Images/Buttons/pauseResumeButton.png";
-        resumePauseImgLabeled.src = "Images/Buttons/pauseResumeButton_Updated.png";
+        resumePauseImg.src = "Images/Buttons/pauseResumeButton_Updated.png";
+        //resumePauseImgLabeled.src = "Images/Buttons/pauseResumeButton_Updated.png";
 
         bananaMatchImg.src = "Images/Clear/bananaPeelClr.png";
         bottleMatchImg.src = "Images/Clear/bottleClr.png";
@@ -824,7 +824,7 @@
         originalPlayButtonSize,
         pauseButtonImg
       );
-      pauseButton.name = "Pause Button";
+      pauseButton.name = "Settings Button";
 
       var restartButton = new CircularButton(
         canvas.width / 4 - originalPlayButtonSize / 2,
@@ -863,12 +863,12 @@
         ttsOnImg
       );
 
-      var labelsButton = new CircularButton(
+      /* var labelsButton = new CircularButton(
         canvas.width - soundButtonSize - soundButtonSize / 8,
         soundButtonSize / 8,
         soundButtonSize,
         labelsButtonImg
-      );
+      ); */
 
       decFallButton = new CircularButton(0,0,70, decFallSpeedImg);
       decFallButton.name = "Decrease Fall Speed Button";
@@ -1753,10 +1753,12 @@
             if (timeIsPaused){
               timer.unpause();
               statusAnnouncer.textContent = "Timer unpaused";
+
               timerButton.image = timerOnImg;
             } else {
               timer.pause();
               statusAnnouncer.textContent = "Timer paused";
+
               timerButton.image = timerOffImg;
             }
 
@@ -1919,7 +1921,6 @@
 
             currentState = state.PLAYSORT;
 
-            pauseButton.image = pauseButtonImg;
             pauseButton.x = sidebarLocalXOrigin + binWidth * (1 / 8);
             pauseButton.y = canvas.height * (7 / 16);
             pauseButton.size = sortButtonSize;
@@ -1980,7 +1981,6 @@
               var gridStartX = canvas.width / 2 - gridSpacing - 30;
               var gridStartY = canvas.height / 2 - 80; // Moved down to avoid covering text
 
-              pauseButton.image = resumePauseImg;
               pauseButton.x = gridStartX - gridSpacing;
               pauseButton.y = gridStartY;
               pauseButton.size = pauseButtonSize;
@@ -2142,11 +2142,15 @@
             if (timeIsPaused){
               timer.unpause();
               statusAnnouncer.textContent = "Timer unpaused";
+                
               timerButton.image = timerOnImg;
+
             } else {
               timer.pause();
               statusAnnouncer.textContent = "Timer paused";
+
               timerButton.image = timerOffImg;
+
             }
 
             if (!muted) {
@@ -2687,7 +2691,6 @@
             currentState = state.WELCOME1;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            //increasePlayButtonSize = true;
           }
           toggleAudio(x, y); 
 
@@ -2701,7 +2704,6 @@
             currentState = state.WELCOME2;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            //increasePlayButtonSize = true;
           }
           toggleAudio(x, y);
 
@@ -2736,7 +2738,6 @@
             playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            //increasePlayButtonSize = true;
           }
 
           toggleAudio(x, y);
@@ -2754,7 +2755,6 @@
             playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            //increasePlayButtonSize = true;
           }
           
           toggleAudio(x, y);
@@ -2771,7 +2771,6 @@
             playButton.y = canvas.height / 2 - originalPlayButtonSize / 4;
             playButton.size = originalPlayButtonSize;
             currentPlayButtonSize = originalPlayButtonSize;
-            //increasePlayButtonSize = true;
           }
 
           toggleAudio(x, y);
@@ -2827,7 +2826,6 @@
 
             currentState = state.PLAYSORT;
 
-            pauseButton.image = pauseButtonImg;
             pauseButton.x = sidebarLocalXOrigin + binWidth * (1 / 8);
             pauseButton.y = canvas.height * (7 / 16);
             pauseButton.size = sortButtonSize;
@@ -2904,8 +2902,9 @@
               backgroundMusic.pause();
             }
 
-          muted = true;
-          muteButton.image = unmuteImg;
+            muted = true;
+            muteButton.image = unmuteImg;
+
         } else if (muted) {
             statusAnnouncer.textContent = "Audio unmuted.";
             if (currentState == state.PLAYSORT) {
@@ -2915,6 +2914,7 @@
             }
 
             muted = false;
+
             muteButton.image = muteImg;
           }
         }
@@ -2928,11 +2928,13 @@
             statusAnnouncer.textContent = "Text-to-speech disabled.";
             ttsEnabled = false;
             ttsButton.image = ttsOffImg;
+
             speechSynthesis.cancel();
           } else {
             statusAnnouncer.textContent = "Text-to-speech enabled.";
             ttsEnabled = true;
             ttsButton.image = ttsOnImg;
+
           }
         }
       }
@@ -2958,42 +2960,61 @@
         }
       }
 
-      function toggleLabelsHandler(e) {
+      /* function toggleLabelsHandler(e) {
         if (e.key === "l") {
+
           e.preventDefault();
-          if (labelsEnabled) {
+
+          if (labelsEnabled == true) {
             statusAnnouncer.textContent = "Labels disabled.";
+
             labelsButton.image = labelsButtonOffImg;
             playButton.image = playButtonImg;
+
             if (!muted)  { muteButton.image = muteImg; }
             else if (muted) { muteButton.image = unmuteImg; }
-            if(!gameIsPaused) {timerButton.image = timerOnImg; }
-            else if (gameIsPaused) {timerButton.image = timerOffImg; }
+
+            if(!timeIsPaused) {timerButton.image = timerOnImg; }
+            else if (timeIsPaused) {timerButton.image = timerOffImg; }
+
             if (!ttsEnabled) { ttsButton.image = ttsOffImg; }
             else if (ttsEnabled) { ttsButton.image = ttsOnImg; }
+
+
             homeButton.image = homeButtonImg;
             restartButton.image = restartButtonImg;
+
             if(menuOP) { pauseButton.image = resumePauseImg; }
             else { pauseButton.image = pauseButtonImg;}
+
             labelsEnabled = false;
-          } else {
+
+          } else if (labelsEnabled == false) {
             statusAnnouncer.textContent = "Labels enabled.";
+
             labelsButton.image = labelsButtonImg;
-            playButton.image = playButtonImgLabeled;            
+            playButton.image = playButtonImgLabeled;
+
             if (!muted)  { muteButton.image = muteImgLabeled; }
             else if (muted) { muteButton.image = unmuteImgLabeled; }
-            if (!gameIsPaused) {timerButton.image = timerOnImgLabeled; }
-            else if (gameIsPaused) {timerButton.image = timerOffImgLabeled; }
+
+            if (!timeIsPaused) {timerButton.image = timerOnImgLabeled; }
+            else if (timeIsPaused) {timerButton.image = timerOffImgLabeled; }
+
             if (!ttsEnabled) { ttsButton.image = ttsOffImgLabeled; }
             else if (ttsEnabled) { ttsButton.image = ttsOnImgLabeled; }
+
             homeButton.image = homeButtonImgLabeled;
             restartButton.image = restartButtonImgLabeled;
+
             if(menuOP) { pauseButton.image = resumePauseImgLabeled; }
             else { pauseButton.image = pauseButtonImgLabeled;}
-            labelsEnabled = true;          
+
+            labelsEnabled = true;
+
           }
         }
-      }
+      } */
 
       function showPauseVolumeControls(show){
         var el = document.getElementById('pauseVolume');
@@ -3039,7 +3060,7 @@
               var gridSpacing = 85; // Space between buttons  //changed from 100 to 85
               var gridStartX = canvas.width / 2 - gridSpacing - 30;
               var gridStartY = canvas.height / 2 - 80; // Moved down to avoid covering text //changed from 50 to 80
-
+              
               pauseButton.x = gridStartX - gridSpacing;
               pauseButton.y = gridStartY;
               pauseButton.size = pauseButtonSize;
@@ -3116,9 +3137,7 @@
               var gridSpacing = 100; // Space between buttons
               var gridStartX = canvas.width / 2 - gridSpacing - 30;
               var gridStartY = canvas.height / 2 - 50; // Moved down to avoid covering text
-              
-              if(!labelsEnabled)  { pauseButton.image = resumePauseImg; }
-              else { pauseButton.image = resumePauseImgLabeled; }
+
               pauseButton.x = gridStartX - gridSpacing;
               pauseButton.y = gridStartY;
               pauseButton.size = pauseButtonSize;
@@ -3143,7 +3162,8 @@
               timerButton.y = gridStartY + gridSpacing;
               timerButton.size = pauseButtonSize;
             } else {
-              menuOP = false;             
+              menuOP = false;
+
               muteButton.x = canvas.width - soundButtonSize - soundButtonSize / 8;
               muteButton.y = soundButtonSize / 8;
               muteButton.size = soundButtonSize;
@@ -3351,14 +3371,12 @@
           if (ttsButton.clicked(x, y) && ttsEnabled) {
             statusAnnouncer.textContent = "Text-to-speech disabled.";
             ttsEnabled = false;
-            if (!labelsEnabled) { ttsButton.image = ttsOffImg; }
-            else if (labelsEnabled) { ttsButton.image = ttsOffImgLabeled; }
+            ttsButton.image = ttsOffImg;
             speechSynthesis.cancel();
           } else if (ttsButton.clicked(x, y) && !ttsEnabled) {
             statusAnnouncer.textContent = "Text-to-speech enabled.";
             ttsEnabled = true;
-            if (!labelsEnabled) { ttsButton.image = ttsOnImg; }
-            else if (labelsEnabled) { ttsButton.image = ttsOnImgLabeled; }
+            ttsButton.image = ttsOnImg;
           }
         }
       }
@@ -4060,7 +4078,7 @@
           playButton.size = currentPlayButtonSize;
 
           if (currentPlayButtonSize >= 125) {
-            //increasePlayButtonSize = false;
+
           }
         } else {
           currentPlayButtonSize -= 0.5;
@@ -4071,7 +4089,6 @@
           playButton.size = currentPlayButtonSize;
 
           if (currentPlayButtonSize <= 100) {
-            //increasePlayButtonSize = true;
           }
         }
       }
@@ -4310,7 +4327,6 @@
 
           drawSortingGame();
 
-          //drawTime();
 
           if (gameIsPaused) {
             // Grid layout: 2 rows x 3 columns (already set when pausing)
