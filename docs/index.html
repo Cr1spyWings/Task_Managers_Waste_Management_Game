@@ -148,6 +148,7 @@
       document.addEventListener("keyup", actPauseMenu, false);
       document.addEventListener("keyup", pauseMenuHandler, false);
       document.addEventListener("keyup", timerToggleHandler, false);
+      document.addEventListener("keyup", fullscreenToggleHandler, false);
 
       (function(){
         var s = document.getElementById('volumeSlider');
@@ -2733,32 +2734,39 @@
           
           toggleAudio(x, y);
         } else if (currentState == state.SORTLEVEL) {
-          if (
-            level1Button.clicked(x, y) ||
-            level2Button.clicked(x, y) ||
-            level3Button.clicked(x, y)
-          ) {
+          // Check for keyboard input (1, 2, or 3 keys) or mouse clicks
+          let levelSelected = false;
+
+          if (e.key === "1") {
+            statusAnnouncer.textContent = " Starting level 1";
+            level = 1;
+            levelSelected = true;
+          } else if (e.key === "2") {
+            statusAnnouncer.textContent = " Starting level 2";
+            level = 2;
+            levelSelected = true;
+          } else if (e.key === "3") {
+            statusAnnouncer.textContent = " Starting level 3";
+            level = 3;
+            levelSelected = true;
+          } else if (level1Button.clicked(x, y)) {
+            statusAnnouncer.textContent = " Starting level 1";
+            level = 1;
+            levelSelected = true;
+          } else if (level2Button.clicked(x, y)) {
+            statusAnnouncer.textContent = " Starting level 2";
+            level = 2;
+            levelSelected = true;
+          } else if (level3Button.clicked(x, y)) {
+            statusAnnouncer.textContent = " Starting level 3";
+            level = 3;
+            levelSelected = true;
+          }
+
+          if (levelSelected) {
             if (!muted) {
               buttonSound.load();
               buttonSound.play();
-            }
-
-            if (level1Button.clicked(x, y)) {
-              statusAnnouncer.textContent = " Starting level 1";
-              console.log('level 1');
-              level = 1;
-            }
-
-            if (level2Button.clicked(x, y)) {
-              statusAnnouncer.textContent = " Starting level 2";
-              console.log('level 2');
-              level = 2;
-            }
-
-            if (level3Button.clicked(x, y)) {
-              statusAnnouncer.textContent = " Starting level 3";
-              console.log('level 3');
-              level = 3;
             }
 
             setSortLevelBoard();
@@ -2894,6 +2902,20 @@
             timerButton.image = timerOnImg;
           }
           return false;
+        }
+      }
+
+      function fullscreenToggleHandler(e) {
+        if (e.key === "f" || e.key === "F") {
+          e.preventDefault();
+          // Check if currently in fullscreen mode
+          if (canvas.classList.contains("scale-fullscreen")) {
+            setCanvasScale("normal");
+            statusAnnouncer.textContent = "Normal screen mode";
+          } else {
+            setCanvasScale("fullscreen");
+            statusAnnouncer.textContent = "Full screen mode";
+          }
         }
       }
 
